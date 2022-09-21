@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">CryptoChallenge</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="main_text_app">Crypto App</string>
+    <string name="txt_button_description">START !</string>
+    <string name="txt_content_front_page">Please, press the start button to get access the crypto app</string>
+    <string name="txt_header">CryptoApp</string>
+    <string name="txt_search_label">Search...</string>
+</resources>
