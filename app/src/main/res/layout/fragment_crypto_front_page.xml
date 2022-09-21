@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="onClickListener"
+            type="android.view.View.OnClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/cyan"
+        tools:context=".ui.featuredhomepage.CryptoFrontPageFragment">
+
+        <ImageView
+            android:id="@+id/img_front_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_front_page_crypto_coin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/guideline4"
+            android:contentDescription="@string/main_text_app" />
+
+        <TextView
+            android:id="@+id/txt_front_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/main_text_app"
+            android:textSize="50sp"
+            android:textColor="@color/white"
+            android:textStyle="normal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/guideline4"
+            />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.50" />
+
+
+        <TextView
+            android:id="@+id/txt_content_front_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_content_front_page"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:textStyle="normal"
+            android:padding="40sp"
+            android:textAlignment="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guideline4"
+            />
+
+        <Button
+            android:id="@+id/btn_start"
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:text="@string/txt_button_description"
+            android:backgroundTint="@color/white"
+            android:elevation="10dp"
+            android:shadowColor="@color/black"
+            android:textColor="@color/cyan"
+            android:textSize="30sp"
+            android:onClickListener="@{onClickListener}"
+            app:layout_constraintTop_toBottomOf="@id/txt_content_front_page"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
