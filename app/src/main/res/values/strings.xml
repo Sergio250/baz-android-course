@@ -6,5 +6,8 @@
     <string name="txt_button_description">START !</string>
     <string name="txt_content_front_page">Please, press the start button to get access the crypto app</string>
     <string name="txt_header">CryptoApp</string>
-    <string name="txt_search_label">Search...</string>
+    <string name="txt_price_label">Price</string>
+    <string name="txt_high_price_label">High:</string>
+    <string name="txt_low_price_label">Low:</string>
+    <string name="txt_last_price_label">Last:</string>
 </resources>
