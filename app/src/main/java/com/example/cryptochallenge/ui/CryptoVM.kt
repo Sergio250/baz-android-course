@@ -1,36 +1,30 @@
 package com.example.cryptochallenge.ui
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.cryptochallenge.domain.response.AvailableBooksResponse
-import com.example.cryptochallenge.domain.response.OrderBookResponse
 import com.example.cryptochallenge.usecase.CryptoUseCase
 import androidx.lifecycle.viewModelScope
-import com.example.cryptochallenge.domain.base.CryptoAsk
-import com.example.cryptochallenge.domain.base.CryptoBids
-import com.example.cryptochallenge.domain.base.CryptoBook
-import com.example.cryptochallenge.domain.base.CryptoDetail
-import com.example.cryptochallenge.domain.base.CryptoCoins
+import com.example.cryptochallenge.R
+import com.example.cryptochallenge.domain.base.*
 import com.example.cryptochallenge.utils.RequestState
+import com.github.mikephil.charting.data.Entry
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
+@HiltViewModel
 class CryptoVM @Inject constructor(private val useCase: CryptoUseCase): ViewModel() {
 
     private val _cryptoList = MutableLiveData<ArrayList<CryptoCoins>>()
     private val _cryptoDetail = MutableLiveData<CryptoDetail>()
-    private val _cryptoBook = MutableLiveData<CryptoBook>()
+    private val _graphDataObject = MutableLiveData<CryptoGraph>()
 
     val cryptoList: LiveData<ArrayList<CryptoCoins>> get() = _cryptoList
     val cryptoDetail: LiveData<CryptoDetail> get() = _cryptoDetail
-    val cryptoBook: LiveData<CryptoBook> get() = _cryptoBook
+    val graphDataObject: LiveData<CryptoGraph> get() = _graphDataObject
 
-    private fun setCryptoBook(value: CryptoBook){
-        _cryptoBook.value = value
-    }
 
     private fun setCryptoDetail(value: CryptoDetail){
         _cryptoDetail.value = value
@@ -40,42 +34,51 @@ class CryptoVM @Inject constructor(private val useCase: CryptoUseCase): ViewMode
         _cryptoList.value = value
     }
 
-    fun getDetailCripto() {
-        useCase.getDetailCripto().onEach { result ->
+    private fun setCryptoDataObject(book: String,
+            bidsValues: ArrayList<Entry>,
+            asksValues: ArrayList<Entry>,
+            xValues: ArrayList<String>,
+            labels: ArrayList<String>,
+            colors: ArrayList<Int>){
+        _graphDataObject.value = CryptoGraph(book, bidsValues, asksValues, xValues, labels, colors)
+    }
+
+    fun getDetailCrypto(book: String) {
+        useCase.getDetailCrypto(book).onEach { result ->
             when (result) {
-                is RequestState.Success<*> -> {
-                    var cryptoDetail: CryptoDetail
-                    result.data?.payload.apply {
+                is RequestState.Success<CryptoDetail> -> {
+                    var cryptoDetail = CryptoDetail()
+                    result.data?.apply {
                         cryptoDetail = CryptoDetail(
-                            book = this?.book,
-                            volume = this?.volume,
-                            high = this?.high,
-                            last = this?.last,
-                            low = this?.low,
-                            vwap = this?.vwap,
-                            ask = this?.ask,
-                            bid = this?.bid,
-                            created_at = this?.createdAt
+                            book = this.book,
+                            volume = this.volume,
+                            high = this.high,
+                            last = this.last,
+                            low = this.low,
+                            vwap = this.vwap,
+                            ask = this.ask,
+                            bid = this.bid,
+                            created_at = this.created_at
                         )
                     }
                     setCryptoDetail(cryptoDetail)
                 }
-                is RequestState.Error<*> -> {
+                is RequestState.Error<CryptoDetail> -> {
                     _cryptoDetail.value = CryptoDetail()
                 }
-                is RequestState.Loading<*> -> {
+                is RequestState.Loading<CryptoDetail> -> {
                     //TODO create loading page
                 }
             }
         }.launchIn(viewModelScope)
     }
 
-    fun getAllCriptoCoins() {
-        useCase.getAllCriptoCoins().onEach { result ->
+    fun getAllCryptoCoins() {
+        useCase.getAllCryptoCoins().onEach { result ->
             when (result) {
-                is RequestState.Success<AvailableBooksResponse> -> {
+                is RequestState.Success<List<CryptoCoins>> -> {
                     val cryptoList = arrayListOf<CryptoCoins>()
-                    result.data?.payload?.forEach { cryptoCoin ->
+                    result.data?.forEach { cryptoCoin ->
                         if(cryptoCoin.book?.contains("mxn") == true) {
                             cryptoList += CryptoCoins(
                                 book = cryptoCoin.book,
@@ -88,52 +91,48 @@ class CryptoVM @Inject constructor(private val useCase: CryptoUseCase): ViewMode
                             )
                         }
                     }
-                    Log.d("prueba", cryptoList.toString())
                     setCryptoList(cryptoList)
                 }
-                is RequestState.Error<AvailableBooksResponse> -> {
+                is RequestState.Error<List<CryptoCoins>> -> {
                     _cryptoList.value = arrayListOf()
                 }
-                is RequestState.Loading<AvailableBooksResponse> -> {
+                is RequestState.Loading<List<CryptoCoins>> -> {
                     //TODO create loading page
                 }
             }
         }.launchIn(viewModelScope)
     }
 
-    fun getOpenOrders() {
-        useCase.getOpenOrders().onEach { result ->
+    fun getOpenOrders(book: String) {
+        useCase.getOpenOrders(book).onEach { result ->
             when (result) {
-                is RequestState.Success<OrderBookResponse> -> {
-                    val cryptoAsks = arrayListOf<CryptoAsk>()
-                    val cryptoBids = arrayListOf<CryptoBids>()
-                    result.data?.payload.apply {
-                        this?.asks?.forEach { ask ->
-                            cryptoAsks += CryptoAsk(
-                                book = ask.book,
-                                price = ask.price,
-                                amount = ask.amount
-                            )
+                is RequestState.Success<CryptoBook> -> {
+                    val graphAsksYValue = arrayListOf<Entry>()
+                    val graphBidsYValue = arrayListOf<Entry>()
+                    val graphXValues = arrayListOf<String>()
+                    result.data?.apply {
+                        this.asks?.forEachIndexed { index, ask ->
+                            graphAsksYValue.add(Entry(ask.price?.toFloat() ?: 0F, index))
+                            graphXValues.add(ask.amount ?: "")
                         }
-                        this?.bids?.forEach { bid ->
-                            cryptoBids += CryptoBids(
-                                book = bid.book,
-                                price = bid.price,
-                                amount = bid.amount
-                            )
+                        this.bids?.forEachIndexed { index, bid ->
+                            graphBidsYValue.add(Entry(bid.price?.toFloat() ?: 0F, index))
+                            graphXValues.add(bid.amount ?: "")
                         }
-                        setCryptoBook(CryptoBook(
-                            cryptoAsks,
-                            cryptoBids,
-                            this?.updated_at,
-                            this?.sequence
-                        ))
+                        setCryptoDataObject(
+                            book = book,
+                            bidsValues = graphBidsYValue,
+                            asksValues = graphAsksYValue,
+                            xValues = graphXValues,
+                            labels = arrayListOf("Bids", "Asks"),
+                            colors = arrayListOf(R.color.black, R.color.orange)
+                        )
                     }
                 }
-                is RequestState.Error<OrderBookResponse> -> {
-                    _cryptoBook.value = CryptoBook()
+                is RequestState.Error<CryptoBook> -> {
+                    _graphDataObject.value = CryptoGraph()
                 }
-                is RequestState.Loading<OrderBookResponse> -> {
+                is RequestState.Loading<CryptoBook> -> {
                     //TODO create loading page
                 }
             }

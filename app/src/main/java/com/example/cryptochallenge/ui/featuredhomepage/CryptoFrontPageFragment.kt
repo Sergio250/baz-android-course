@@ -8,18 +8,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.cryptochallenge.R
-import com.example.cryptochallenge.repository.Retrofit
-import com.example.cryptochallenge.usecase.CryptoUseCase
-import com.example.cryptochallenge.repository.CryptoRepositoryImp
 import com.example.cryptochallenge.databinding.FragmentCryptoFrontPageBinding
 import com.example.cryptochallenge.ui.CryptoVM
-import com.example.cryptochallenge.utils.ViewModelFactory
 
 class CryptoFrontPageFragment : Fragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentCryptoFrontPageBinding
-    private val cryptoVM by activityViewModels<CryptoVM> { ViewModelFactory(cryptoUseCase) }
-    private lateinit var cryptoUseCase: CryptoUseCase
+    private val cryptoVM by activityViewModels<CryptoVM>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentCryptoFrontPageBinding.inflate(layoutInflater, container, false)
@@ -28,11 +23,10 @@ class CryptoFrontPageFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        cryptoUseCase = CryptoUseCase(CryptoRepositoryImp(Retrofit.webService))
         binding.apply {
             onClickListener = this@CryptoFrontPageFragment
         }
-        cryptoVM.getAllCriptoCoins()
+        cryptoVM.getAllCryptoCoins()
     }
 
     override fun onClick(view: View) {
