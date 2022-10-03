@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--suppress ALL -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="HardcodedText,ContentDescription">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/box_crypto_item"
+        android:id="@+id/boxCryptoItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="2dp"
@@ -19,19 +21,17 @@
             android:padding="16dp">
 
             <ImageView
-                android:id="@+id/img_crypto_logo"
+                android:id="@+id/imgCryptoLogo"
                 android:layout_width="60dp"
                 android:layout_height="0dp"
-                android:src="@drawable/ic_axie_infinity_axs_crypto_coin"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent="0.317" />
 
-
             <TextView
-                android:id="@+id/txt_crypto_name"
+                android:id="@+id/txtCryptoName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -41,24 +41,23 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/cyan"
-                app:layout_constraintEnd_toStartOf="@id/iv_shareStore"
-                app:layout_constraintStart_toEndOf="@id/img_crypto_logo"
+                app:layout_constraintEnd_toStartOf="@id/ivShareStore"
+                app:layout_constraintStart_toEndOf="@id/imgCryptoLogo"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/txt_crypto_value"
+                android:id="@+id/txtCryptoValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="eth_mxn"
                 android:textColor="@color/orange"
                 android:textSize="14sp"
                 android:textStyle="normal"
-                app:layout_constraintTop_toBottomOf="@id/txt_crypto_name"
-                app:layout_constraintStart_toStartOf="@id/txt_crypto_name"
+                app:layout_constraintTop_toBottomOf="@id/txtCryptoName"
+                app:layout_constraintStart_toStartOf="@id/txtCryptoName"
                 tools:visibility="visible" />
 
             <TextView
-                android:id="@+id/txt_price_header"
+                android:id="@+id/txtPriceHeader"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -68,35 +67,35 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:textColor="@color/cyan"
-                app:layout_constraintTop_toTopOf="@id/txt_crypto_value"
-                app:layout_constraintEnd_toEndOf="@id/txt_crypto_name" />
+                app:layout_constraintTop_toTopOf="@id/txtCryptoValue"
+                app:layout_constraintEnd_toEndOf="@id/txtCryptoName" />
 
             <TextView
-                android:id="@+id/txt_max_price_value"
+                android:id="@+id/txtMaxPriceValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="$10.00 mxn"
                 android:textColor="@color/green"
                 android:textSize="10sp"
                 android:textStyle="normal"
-                app:layout_constraintTop_toBottomOf="@id/txt_price_header"
-                app:layout_constraintEnd_toEndOf="@id/txt_crypto_name"
+                app:layout_constraintTop_toBottomOf="@id/txtPriceHeader"
+                app:layout_constraintEnd_toEndOf="@id/txtCryptoName"
                 tools:visibility="visible" />
 
             <TextView
-                android:id="@+id/txt_min_price_value"
+                android:id="@+id/txtMinPriceValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="$10.00 mxn"
                 android:textColor="@color/red"
                 android:textSize="10sp"
                 android:textStyle="normal"
-                app:layout_constraintTop_toBottomOf="@id/txt_max_price_value"
-                app:layout_constraintEnd_toEndOf="@id/txt_crypto_name"
+                app:layout_constraintTop_toBottomOf="@id/txtMaxPriceValue"
+                app:layout_constraintEnd_toEndOf="@id/txtCryptoName"
                 tools:visibility="visible" />
 
             <ImageView
-                android:id="@+id/iv_shareStore"
+                android:id="@+id/ivShareStore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"

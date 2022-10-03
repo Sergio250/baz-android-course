@@ -1,9 +1,11 @@
 package com.example.cryptochallenge.repository
 
 import com.example.cryptochallenge.data.database.entities.*
-import com.example.cryptochallenge.domain.base.CryptoBook
+import com.example.cryptochallenge.domain.base.CryptoData
 import com.example.cryptochallenge.domain.base.CryptoCoins
 import com.example.cryptochallenge.domain.base.CryptoDetail
+import com.example.cryptochallenge.domain.response.TickerResponse
+import io.reactivex.Observable
 
 interface CryptoRepositoryInterface {
 
@@ -12,14 +14,14 @@ interface CryptoRepositoryInterface {
     suspend fun insertCryptoCoinsToDatabase(cryptoCoins: List<CryptoCoinsEntity>)
     suspend fun deleteCryptoCoinsFromDatabase()
 
-    suspend fun getDetailCryptoFromApi(book: String): CryptoDetail
-    suspend fun getDetailCryptoFromDatabase(book: String): CryptoDetail
+    fun getCryptoDetailFromApi(book: String): Observable<TickerResponse>
+    suspend fun getCryptoDetailFromDatabase(book: String): CryptoDetail
     suspend fun insetCryptoDetailToDatabase(cryptoCoin: CryptoDetailEntity)
     suspend fun deleteCryptoDetailFromDatabase(book: String)
 
-    suspend fun getBidsAsksFromApi(book: String): CryptoBook
-    suspend fun getBidsAsksFromDatabase(book: String) : CryptoBook
-    suspend fun insertBidsAsksToDatabase(cryptoBidsCoin: List<CryptoBidsEntity>, cryptoAsksCoin: List<CryptoAsksEntity>)
+    suspend fun getBidsAsksFromApi(book: String): CryptoData
+    suspend fun getBidsAsksFromDatabase(book: String): CryptoData
+    suspend fun insertBidsAsksToDatabase(cryptoBidsAsksCoins: List<CryptoBidsAsksEntity>)
     suspend fun deleteBidsAsksFromDatabase(book: String)
 
 

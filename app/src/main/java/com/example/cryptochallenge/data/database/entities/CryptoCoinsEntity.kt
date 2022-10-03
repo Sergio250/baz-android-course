@@ -6,13 +6,12 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "crypto_coins")
 data class CryptoCoinsEntity (
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") val id: Int = 0,
-    @ColumnInfo(name = "book") val book: String,
-    @ColumnInfo(name = "minimum_amount") val minAmount: String,
-    @ColumnInfo(name = "maximum_amount") val maxAmount: String,
-    @ColumnInfo(name = "minimum_price") val minPrice: String,
-    @ColumnInfo(name = "maximum_price") val maxPrice: String,
-    @ColumnInfo(name = "minimum_value") val minValue: String,
-    @ColumnInfo(name = "maximum_value") val maxValue: String
+    @PrimaryKey
+    @ColumnInfo val book: String,
+    @ColumnInfo val minAmount: String,
+    @ColumnInfo val maxAmount: String,
+    @ColumnInfo val minPrice: String,
+    @ColumnInfo val maxPrice: String,
+    @ColumnInfo val minValue: String,
+    @ColumnInfo val maxValue: String
 )

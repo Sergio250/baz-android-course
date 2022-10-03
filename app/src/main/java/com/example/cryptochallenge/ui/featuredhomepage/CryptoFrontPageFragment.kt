@@ -10,11 +10,13 @@ import androidx.navigation.fragment.findNavController
 import com.example.cryptochallenge.R
 import com.example.cryptochallenge.databinding.FragmentCryptoFrontPageBinding
 import com.example.cryptochallenge.ui.CryptoVM
+import com.example.cryptochallenge.utils.InternetConnectionVerifier
 
 class CryptoFrontPageFragment : Fragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentCryptoFrontPageBinding
     private val cryptoVM by activityViewModels<CryptoVM>()
+    private val internetVerifier by lazy{ InternetConnectionVerifier(requireActivity().application) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentCryptoFrontPageBinding.inflate(layoutInflater, container, false)
@@ -23,17 +25,24 @@ class CryptoFrontPageFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.apply {
-            onClickListener = this@CryptoFrontPageFragment
+        binding.apply { onClickListener = this@CryptoFrontPageFragment }
+        internetVerifier.observe(viewLifecycleOwner) {
+            cryptoVM.setInternetConnectionVerifier(it)
         }
-        cryptoVM.getAllCryptoCoins()
     }
 
     override fun onClick(view: View) {
         binding.apply {
             when (view.id) {
                 btnStart.id ->{
-                    findNavController().navigate(R.id.cryptoAccountCreationFragment)
+                    cryptoVM.isInternetConnectionAvailable.observe(viewLifecycleOwner){
+                        if(it){
+                            cryptoVM.getAllCryptoCoins()
+                            findNavController().navigate(R.id.cryptoAccountCreationFragment)
+                        } else {
+                            //TODO Add a message for internet connection problems
+                        }
+                    }
                 }
             }
         }

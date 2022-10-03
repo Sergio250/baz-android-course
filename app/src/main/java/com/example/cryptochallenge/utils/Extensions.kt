@@ -1,7 +1,6 @@
 package com.example.cryptochallenge.utils
 
-import com.example.cryptochallenge.data.database.entities.CryptoAsksEntity
-import com.example.cryptochallenge.data.database.entities.CryptoBidsEntity
+import com.example.cryptochallenge.data.database.entities.CryptoBidsAsksEntity
 import com.example.cryptochallenge.data.database.entities.CryptoCoinsEntity
 import com.example.cryptochallenge.data.database.entities.CryptoDetailEntity
 import com.example.cryptochallenge.domain.base.*
@@ -16,6 +15,8 @@ fun String.format(): String = this.replace("_", " ")
 
 fun String.toCaseLower() : String = this[0] + (this.substring(1, this.length)).lowercase()
 
+fun List<CryptoCoins>.toArrayList() = ArrayList<CryptoCoins>(this)
+
 fun AvailableBooksResponse.Payload.toDomain() =
     CryptoCoins(book = book,
         minAmount = minAmount,
@@ -29,33 +30,27 @@ fun AvailableBooksResponse.Payload.toDomain() =
 fun TickerResponse.Payload.toDomain() =
     CryptoDetail(
         book = book,
-        volume = volume,
         high = high,
         last = last,
-        low = low,
-        vwap = vwap,
-        ask = ask,
-        bid = bid,
-        created_at = createdAt
+        low = low
+    )
+
+fun TickerResponse.Payload.toDatabase() =
+    CryptoDetailEntity(
+        book = book ?: "",
+        high = high ?: "",
+        last = last ?: "",
+        low = low ?: ""
     )
 
 fun OrderBookResponse.Payload.toDomain() =
-    CryptoBook(
-        asks = asks?.map { it.toDomain() },
-        bids = bids?.map { it.toDomain() },
-        updated_at = updated_at,
-        sequence = sequence
+    CryptoData(
+        bidsAsks = this.asks?.map { it.toDomain() },
+        sequence = this.sequence
     )
 
-fun OrderBookResponse.Payload.Asks.toDomain() =
-    CryptoAsk(
-        book = book,
-        price = price,
-        amount = amount
-    )
-
-fun OrderBookResponse.Payload.Bids.toDomain() =
-    CryptoBids(
+fun OrderBookResponse.Payload.BidsOrAsks.toDomain() =
+    CryptoBidsAsk(
         book = book,
         price = price,
         amount = amount
@@ -74,30 +69,22 @@ fun CryptoCoinsEntity.toDomain() =
 fun CryptoDetailEntity.toDomain() =
     CryptoDetail(
         book = book,
-        volume = volume,
         high = high,
         last = last,
-        low = low,
-        vwap = vwap,
-        ask = ask,
-        bid = bid,
-        created_at = createdAt
+        low = low
     )
 
-fun CryptoBidsEntity.toDomain() =
-    CryptoBids(
+fun List<CryptoBidsAsk>.toDomain()=
+    CryptoData(
+        bidsAsks = this
+    )
+
+fun CryptoBidsAsksEntity.toDomain() =
+    CryptoBidsAsk(
         book = book,
         price = price,
         amount = amount
     )
-
-fun CryptoAsksEntity.toDomain() =
-    CryptoAsk(
-        book = book,
-        price = price,
-        amount = amount
-    )
-
 
 fun CryptoCoins.toDatabase() =
     CryptoCoinsEntity(
@@ -113,27 +100,16 @@ fun CryptoCoins.toDatabase() =
 fun CryptoDetail.toDatabase() =
     CryptoDetailEntity(
         book = book ?: "",
-        volume = volume ?: "",
         high = high ?: "",
         last = last ?: "",
-        low = low ?: "",
-        vwap = vwap ?: "",
-        ask = ask ?: "",
-        bid = bid ?: "",
-        createdAt = created_at ?: ""
+        low = low ?: ""
     )
 
-fun CryptoBids.toDatabase() =
-    CryptoBidsEntity(
+fun CryptoBidsAsk.toDatabase() =
+    CryptoBidsAsksEntity(
         book = book ?: "",
         price = price ?: "",
         amount = amount ?: ""
     )
 
-fun CryptoAsk.toDatabase() =
-    CryptoAsksEntity(
-        book = book ?: "",
-        price = price ?: "",
-        amount = amount ?: ""
-    )
 

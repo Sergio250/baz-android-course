@@ -2,22 +2,21 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
+    android:id="@+id/navGraph"
     app:startDestination="@id/cryptoFrontPageFragment">
 
     <fragment
         android:id="@+id/cryptoFrontPageFragment"
         android:name="com.example.cryptochallenge.ui.featuredhomepage.CryptoFrontPageFragment"
-        android:label="fragment_crypto_front_page"
-        tools:layout="@layout/fragment_crypto_front_page" >
+        android:label="fragmentCryptoFrontPage">
         <action
-            android:id="@+id/action_cryptoFrontPageFragment_to_cryptoAccountCreationFragment"
+            android:id="@+id/actionCryptoFrontPageFragmentToCryptoAccountCreationFragment"
             app:destination="@id/cryptoAccountCreationFragment" />
     </fragment>
     <fragment
         android:id="@+id/cryptoAccountCreationFragment"
         android:name="com.example.cryptochallenge.ui.featuredlist.CryptoListFragment"
-        android:label="fragment_crypto_account_creation"
+        android:label="fragmentCryptoAccountCreation"
         tools:layout="@layout/fragment_crypto_list" >
         <action
             android:id="@+id/action_cryptoAccountCreationFragment_to_cryptoDetailFragment"
@@ -26,6 +25,6 @@
     <fragment
         android:id="@+id/cryptoDetailFragment"
         android:name="com.example.cryptochallenge.ui.featureddetail.CryptoDetailFragment"
-        android:label="fragment_crypto_detail"
+        android:label="fragmentCryptoDetail"
         tools:layout="@layout/fragment_crypto_detail" />
 </navigation>
