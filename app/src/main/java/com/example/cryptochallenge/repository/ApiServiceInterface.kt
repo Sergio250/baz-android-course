@@ -3,6 +3,7 @@ package com.example.cryptochallenge.repository
 import com.example.cryptochallenge.domain.response.AvailableBooksResponse
 import com.example.cryptochallenge.domain.response.OrderBookResponse
 import com.example.cryptochallenge.domain.response.TickerResponse
+import io.reactivex.Observable
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -18,7 +19,7 @@ interface ApiServiceInterface{
     ): Response<OrderBookResponse>
 
     @GET("ticker/")
-    suspend fun getDetailCrypto(
+    fun getCryptoDetail(
         @Query("book") book: String
-    ): Response<TickerResponse>
+    ): Observable<TickerResponse>
 }

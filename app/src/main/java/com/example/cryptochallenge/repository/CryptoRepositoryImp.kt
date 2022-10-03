@@ -1,17 +1,15 @@
 package com.example.cryptochallenge.repository
 
 import com.example.cryptochallenge.data.database.dao.CryptoDaoInterface
-import com.example.cryptochallenge.data.database.entities.CryptoAsksEntity
-import com.example.cryptochallenge.data.database.entities.CryptoBidsEntity
-import com.example.cryptochallenge.data.database.entities.CryptoCoinsEntity
-import com.example.cryptochallenge.data.database.entities.CryptoDetailEntity
-import com.example.cryptochallenge.domain.base.CryptoBook
+import com.example.cryptochallenge.data.database.entities.*
 import com.example.cryptochallenge.domain.base.CryptoCoins
+import com.example.cryptochallenge.domain.base.CryptoData
 import com.example.cryptochallenge.domain.base.CryptoDetail
 import com.example.cryptochallenge.domain.response.AvailableBooksResponse
 import com.example.cryptochallenge.domain.response.OrderBookResponse
 import com.example.cryptochallenge.domain.response.TickerResponse
 import com.example.cryptochallenge.utils.toDomain
+import io.reactivex.Observable
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -31,12 +29,11 @@ class CryptoRepositoryImp @Inject constructor(private val api: ApiServiceInterfa
 
 
 
-    override suspend fun getDetailCryptoFromApi(book: String): CryptoDetail {
-        val response: Response<TickerResponse> = api.getDetailCrypto(book)
-        return response.body()?.payload?.toDomain() ?: CryptoDetail()
+    override fun getCryptoDetailFromApi(book: String): Observable<TickerResponse> {
+        return api.getCryptoDetail(book)
     }
-    override suspend fun getDetailCryptoFromDatabase(book: String): CryptoDetail {
-        val response = dao.getDetailCryptoCoinFromDatabase(book)
+    override suspend fun getCryptoDetailFromDatabase(book: String): CryptoDetail {
+        val response = dao.getCryptoDetailFromDatabase(book)
         return response.toDomain()
     }
     override suspend fun insetCryptoDetailToDatabase(cryptoCoin: CryptoDetailEntity) = dao.insertCryptoDetailToDatabase(cryptoCoin)
@@ -44,14 +41,16 @@ class CryptoRepositoryImp @Inject constructor(private val api: ApiServiceInterfa
 
 
 
-    override suspend fun getBidsAsksFromApi(book: String): CryptoBook{
+    override suspend fun getBidsAsksFromApi(book: String): CryptoData{
         val response: Response<OrderBookResponse> = api.getOpenOrders(book)
-        return response.body()?.payload?.toDomain() ?: CryptoBook()
+        return response.body()?.payload?.toDomain() ?: CryptoData()
     }
-    override suspend fun getBidsAsksFromDatabase(book: String) = dao.getBidsAndAsksCryptoCoinFromDatabase(book)
-    override suspend fun insertBidsAsksToDatabase(cryptoBidsCoin: List<CryptoBidsEntity>, cryptoAsksCoin: List<CryptoAsksEntity>) =
-        dao.insertBidsAndAsksCryptoCoinToDatabase(cryptoBidsCoin, cryptoAsksCoin)
+    override suspend fun getBidsAsksFromDatabase(book: String): CryptoData {
+        val response = dao.getBidsAsksCryptoCoinFromDatabase(book)
+        return response.map { it.toDomain() }.toDomain()
+    }
+    override suspend fun insertBidsAsksToDatabase(cryptoBidsAsksCoins: List<CryptoBidsAsksEntity>) =
+        dao.insertBidsAndAsksCryptoCoinToDatabase(cryptoBidsAsksCoins)
     override suspend fun deleteBidsAsksFromDatabase(book: String) = dao.deleteBidsAndAsksCryptoCoinFromDatabase(book)
-
 
 }

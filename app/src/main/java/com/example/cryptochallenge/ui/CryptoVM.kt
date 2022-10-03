@@ -1,17 +1,23 @@
 package com.example.cryptochallenge.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.view.View
+import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.*
 import com.example.cryptochallenge.usecase.CryptoUseCase
-import androidx.lifecycle.viewModelScope
-import com.example.cryptochallenge.R
 import com.example.cryptochallenge.domain.base.*
+import com.example.cryptochallenge.domain.response.TickerResponse
 import com.example.cryptochallenge.utils.RequestState
+import com.example.cryptochallenge.utils.toArrayList
+import com.example.cryptochallenge.utils.toDomain
 import com.github.mikephil.charting.data.Entry
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers.io
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,123 +26,84 @@ class CryptoVM @Inject constructor(private val useCase: CryptoUseCase): ViewMode
     private val _cryptoList = MutableLiveData<ArrayList<CryptoCoins>>()
     private val _cryptoDetail = MutableLiveData<CryptoDetail>()
     private val _graphDataObject = MutableLiveData<CryptoGraph>()
+    private val _isInternetConnectionAvailable = MutableLiveData<Boolean>()
+    private val _showLoadingLottie = MutableLiveData<Int>()
 
     val cryptoList: LiveData<ArrayList<CryptoCoins>> get() = _cryptoList
     val cryptoDetail: LiveData<CryptoDetail> get() = _cryptoDetail
     val graphDataObject: LiveData<CryptoGraph> get() = _graphDataObject
+    val isInternetConnectionAvailable: LiveData<Boolean> get() = _isInternetConnectionAvailable
 
-
-    private fun setCryptoDetail(value: CryptoDetail){
-        _cryptoDetail.value = value
+    fun setInternetConnectionVerifier(value: Boolean){
+        _isInternetConnectionAvailable.value = value
     }
 
-    private fun setCryptoList(value: ArrayList<CryptoCoins>){
-        _cryptoList.value = value
+    @VisibleForTesting
+    fun setList(list: List<CryptoCoins>){
+        _cryptoList.value = list.toArrayList()
     }
 
-    private fun setCryptoDataObject(book: String,
-            bidsValues: ArrayList<Entry>,
-            asksValues: ArrayList<Entry>,
-            xValues: ArrayList<String>,
-            labels: ArrayList<String>,
-            colors: ArrayList<Int>){
-        _graphDataObject.value = CryptoGraph(book, bidsValues, asksValues, xValues, labels, colors)
-    }
-
-    fun getDetailCrypto(book: String) {
-        useCase.getDetailCrypto(book).onEach { result ->
-            when (result) {
-                is RequestState.Success<CryptoDetail> -> {
-                    var cryptoDetail = CryptoDetail()
-                    result.data?.apply {
-                        cryptoDetail = CryptoDetail(
-                            book = this.book,
-                            volume = this.volume,
-                            high = this.high,
-                            last = this.last,
-                            low = this.low,
-                            vwap = this.vwap,
-                            ask = this.ask,
-                            bid = this.bid,
-                            created_at = this.created_at
-                        )
+    fun getCryptoDetail(book: String) {
+        useCase.getCryptoDetail(book){
+            it.subscribeOn(io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object: Observer<TickerResponse>{
+                    override fun onSubscribe(d: Disposable) { }
+                    override fun onNext(ticker: TickerResponse) {
+                        _cryptoDetail.postValue(ticker.payload?.toDomain())
                     }
-                    setCryptoDetail(cryptoDetail)
-                }
-                is RequestState.Error<CryptoDetail> -> {
-                    _cryptoDetail.value = CryptoDetail()
-                }
-                is RequestState.Loading<CryptoDetail> -> {
-                    //TODO create loading page
-                }
-            }
-        }.launchIn(viewModelScope)
+                    override fun onError(e: Throwable) {
+                        _cryptoDetail.postValue(CryptoDetail())
+                    }
+                    override fun onComplete() { }
+                })
+        }
     }
 
     fun getAllCryptoCoins() {
         useCase.getAllCryptoCoins().onEach { result ->
-            when (result) {
-                is RequestState.Success<List<CryptoCoins>> -> {
-                    val cryptoList = arrayListOf<CryptoCoins>()
-                    result.data?.forEach { cryptoCoin ->
-                        if(cryptoCoin.book?.contains("mxn") == true) {
-                            cryptoList += CryptoCoins(
-                                book = cryptoCoin.book,
-                                minAmount = cryptoCoin.minAmount,
-                                maxAmount = cryptoCoin.maxAmount,
-                                minPrice = cryptoCoin.minPrice,
-                                maxPrice = cryptoCoin.maxPrice,
-                                minValue = cryptoCoin.minValue,
-                                maxValue = cryptoCoin.maxValue
-                            )
-                        }
+            withContext(IO) {
+                when (result) {
+                    is RequestState.Success<List<CryptoCoins>> -> {
+                        _cryptoList.postValue(result.data?.filter { it.book?.contains("mxn") == true }?.toArrayList())
+                        _showLoadingLottie.postValue(View.GONE)
                     }
-                    setCryptoList(cryptoList)
-                }
-                is RequestState.Error<List<CryptoCoins>> -> {
-                    _cryptoList.value = arrayListOf()
-                }
-                is RequestState.Loading<List<CryptoCoins>> -> {
-                    //TODO create loading page
+                    is RequestState.Error<List<CryptoCoins>> ->{
+                        _cryptoList.postValue(arrayListOf())
+                        _showLoadingLottie.postValue(View.GONE)
+                    }
+                    is RequestState.Loading<List<CryptoCoins>> -> { _showLoadingLottie.postValue(View.VISIBLE) }
                 }
             }
         }.launchIn(viewModelScope)
     }
+
 
     fun getOpenOrders(book: String) {
         useCase.getOpenOrders(book).onEach { result ->
-            when (result) {
-                is RequestState.Success<CryptoBook> -> {
-                    val graphAsksYValue = arrayListOf<Entry>()
-                    val graphBidsYValue = arrayListOf<Entry>()
-                    val graphXValues = arrayListOf<String>()
-                    result.data?.apply {
-                        this.asks?.forEachIndexed { index, ask ->
-                            graphAsksYValue.add(Entry(ask.price?.toFloat() ?: 0F, index))
-                            graphXValues.add(ask.amount ?: "")
+            withContext(IO) {
+                when (result) {
+                    is RequestState.Success<CryptoData> -> {
+                        val graphYValue = arrayListOf<Entry>()
+                        val graphXValues = arrayListOf<String>()
+                        result.data?.apply {
+                            this.bidsAsks?.forEachIndexed { index, bidsAsk ->
+                                graphYValue.add(Entry(bidsAsk.price?.toFloat() ?: 0F, index))
+                                graphXValues.add(bidsAsk.amount ?: "")
+                            }
+                            _graphDataObject.postValue(CryptoGraph(
+                                book = book,
+                                yValues = graphYValue,
+                                xValues = graphXValues
+                            ))
                         }
-                        this.bids?.forEachIndexed { index, bid ->
-                            graphBidsYValue.add(Entry(bid.price?.toFloat() ?: 0F, index))
-                            graphXValues.add(bid.amount ?: "")
-                        }
-                        setCryptoDataObject(
-                            book = book,
-                            bidsValues = graphBidsYValue,
-                            asksValues = graphAsksYValue,
-                            xValues = graphXValues,
-                            labels = arrayListOf("Bids", "Asks"),
-                            colors = arrayListOf(R.color.black, R.color.orange)
-                        )
                     }
-                }
-                is RequestState.Error<CryptoBook> -> {
-                    _graphDataObject.value = CryptoGraph()
-                }
-                is RequestState.Loading<CryptoBook> -> {
-                    //TODO create loading page
+                    is RequestState.Error<CryptoData> -> _graphDataObject.value = CryptoGraph()
+                    is RequestState.Loading<CryptoData> -> { }
                 }
             }
         }.launchIn(viewModelScope)
     }
-
 }
+
+

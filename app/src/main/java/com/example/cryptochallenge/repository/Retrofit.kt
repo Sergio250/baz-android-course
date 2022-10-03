@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 
@@ -49,11 +50,12 @@ abstract class CryptoModule {
                 .client(client)
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
         }
 
         @Provides
-        fun providesApiService(retrofit: Retrofit) = retrofit.create(ApiServiceInterface::class.java)
+        fun providesApiService(retrofit: Retrofit): ApiServiceInterface = retrofit.create(ApiServiceInterface::class.java)
 
     }
 

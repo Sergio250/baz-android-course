@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.cryptochallenge.R
-import com.example.cryptochallenge.usecase.CryptoUseCase
 import com.example.cryptochallenge.databinding.FragmentCryptoListBinding
 import com.example.cryptochallenge.ui.CryptoVM
 
@@ -26,10 +25,14 @@ class CryptoListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
             cryptoVM.cryptoList.observe(viewLifecycleOwner) {
-                val recycler = CryptoAdapter {
-                    cryptoVM.getOpenOrders(it.book ?: "")
-                    cryptoVM.getDetailCrypto(it.book ?: "")
-                    findNavController().navigate(R.id.cryptoDetailFragment)
+                val recycler = CryptoAdapter { cryptoCoin ->
+                    cryptoVM.isInternetConnectionAvailable.observe(viewLifecycleOwner){
+                        if(it) {
+                            cryptoVM.getOpenOrders(cryptoCoin.book ?: "")
+                            cryptoVM.getCryptoDetail(cryptoCoin.book ?: "")
+                            findNavController().navigate(R.id.cryptoDetailFragment)
+                        }
+                    }
                 }
                 recyclerView.adapter = recycler
                 recycler.submitList(cryptoVM.cryptoList.value ?: arrayListOf())
@@ -37,3 +40,5 @@ class CryptoListFragment : Fragment() {
         }
     }
 }
+
+

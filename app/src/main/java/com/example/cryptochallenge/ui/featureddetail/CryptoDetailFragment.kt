@@ -11,7 +11,7 @@ import com.example.cryptochallenge.R
 import com.example.cryptochallenge.databinding.FragmentCryptoDetailBinding
 import com.example.cryptochallenge.domain.base.CryptoGraph
 import com.example.cryptochallenge.ui.CryptoVM
-import com.example.cryptochallenge.utils.CryptoNameCatalog
+import com.example.cryptochallenge.utils.CryptoCatalog
 import com.example.cryptochallenge.utils.format
 import com.example.cryptochallenge.utils.formatAsCurrency
 import com.github.mikephil.charting.data.LineData
@@ -36,8 +36,8 @@ class CryptoDetailFragment : Fragment() {
                     txtLastPriceData.text = it.last?.toDouble()?.formatAsCurrency()
                 }
                 graphDataObject.observe(viewLifecycleOwner) {
-                    txtCryptoNameHeader.text = CryptoNameCatalog.values().find { name ->
-                        name.book == it.book
+                    txtCryptoNameHeader.text = CryptoCatalog.values().find { cryptoInfo ->
+                        cryptoInfo.book == it.book
                     }?.toName()?.format()
                     drawLinesDataSet(setGraphLineConfiguration(it), it.xValues ?: arrayListOf())
                 }
@@ -45,16 +45,14 @@ class CryptoDetailFragment : Fragment() {
         }
     }
 
-    private fun setGraphLineConfiguration(values: CryptoGraph): ArrayList<LineDataSet> {
-        val graphBidsDataSet = LineDataSet(values.bidsYValues, values.labels?.get(0) ?: "")
-        val graphAsksDataSet = LineDataSet(values.asksYValues, values.labels?.get(1) ?: "")
-        graphBidsDataSet.color = ContextCompat.getColor(requireContext(), values.colors?.get(0) ?: 0)
-        graphAsksDataSet.color = ContextCompat.getColor(requireContext(), values.colors?.get(1) ?: 0)
-        return arrayListOf(graphBidsDataSet, graphAsksDataSet)
+    private fun setGraphLineConfiguration(values: CryptoGraph): LineDataSet {
+        val graphBidsAsksDataSet = LineDataSet(values.yValues, getString(R.string.txtDescriptionLabel))
+        graphBidsAsksDataSet.color = ContextCompat.getColor(requireContext(), R.color.black)
+        return graphBidsAsksDataSet
     }
 
-    private fun drawLinesDataSet(lines: ArrayList<LineDataSet>, xValues: ArrayList<String>){
-        binding.chart.data = LineData(xValues, lines as List<LineDataSet>)
+    private fun drawLinesDataSet(lines: LineDataSet, xValues: ArrayList<String>){
+        binding.chart.data = LineData(xValues, lines)
         binding.chart.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.cyan))
     }
 }
