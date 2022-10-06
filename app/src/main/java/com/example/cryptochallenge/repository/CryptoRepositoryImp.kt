@@ -20,28 +20,24 @@ class CryptoRepositoryImp @Inject constructor(private val api: ApiServiceInterfa
         val response: Response<AvailableBooksResponse> = api.getAllCryptoCoins()
         return response.body()?.payload?.map { it.toDomain() } ?: arrayListOf()
     }
-    override suspend fun getAllCryptoCoinsFromDatabase(): List<CryptoCoins>{
+    override suspend fun getAllCryptoCoinsFromDatabase(): List<CryptoCoins> {
         val response = dao.getAllCryptoCoinsFromDatabase()
         return response.map { it.toDomain() }
     }
     override suspend fun insertCryptoCoinsToDatabase(cryptoCoins: List<CryptoCoinsEntity>) = dao.insertCryptoCoinsToDatabase(cryptoCoins)
     override suspend fun deleteCryptoCoinsFromDatabase() = dao.deleteCryptoCoinsFromDatabase()
 
-
-
     override fun getCryptoDetailFromApi(book: String): Observable<TickerResponse> {
         return api.getCryptoDetail(book)
     }
-    override suspend fun getCryptoDetailFromDatabase(book: String): CryptoDetail {
+    override fun getCryptoDetailFromDatabase(book: String): CryptoDetail {
         val response = dao.getCryptoDetailFromDatabase(book)
         return response.toDomain()
     }
-    override suspend fun insetCryptoDetailToDatabase(cryptoCoin: CryptoDetailEntity) = dao.insertCryptoDetailToDatabase(cryptoCoin)
-    override suspend fun deleteCryptoDetailFromDatabase(book: String) = dao.deleteCryptoDetailFromDatabase(book)
+    override fun insertCryptoDetailToDatabase(cryptoCoin: CryptoDetailEntity) = dao.insertCryptoDetailToDatabase(cryptoCoin)
+    override fun deleteCryptoDetailFromDatabase(book: String) = dao.deleteCryptoDetailFromDatabase(book)
 
-
-
-    override suspend fun getBidsAsksFromApi(book: String): CryptoData{
+    override suspend fun getBidsAsksFromApi(book: String): CryptoData {
         val response: Response<OrderBookResponse> = api.getOpenOrders(book)
         return response.body()?.payload?.toDomain() ?: CryptoData()
     }
@@ -52,5 +48,4 @@ class CryptoRepositoryImp @Inject constructor(private val api: ApiServiceInterfa
     override suspend fun insertBidsAsksToDatabase(cryptoBidsAsksCoins: List<CryptoBidsAsksEntity>) =
         dao.insertBidsAndAsksCryptoCoinToDatabase(cryptoBidsAsksCoins)
     override suspend fun deleteBidsAsksFromDatabase(book: String) = dao.deleteBidsAndAsksCryptoCoinFromDatabase(book)
-
 }

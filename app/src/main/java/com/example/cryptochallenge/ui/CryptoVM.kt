@@ -1,14 +1,13 @@
 package com.example.cryptochallenge.ui
 
+import android.util.Log
 import android.view.View
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
-import com.example.cryptochallenge.usecase.CryptoUseCase
 import com.example.cryptochallenge.domain.base.*
-import com.example.cryptochallenge.domain.response.TickerResponse
+import com.example.cryptochallenge.usecase.CryptoUseCase
 import com.example.cryptochallenge.utils.RequestState
 import com.example.cryptochallenge.utils.toArrayList
-import com.example.cryptochallenge.utils.toDomain
 import com.github.mikephil.charting.data.Entry
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.Observer
@@ -21,43 +20,36 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class CryptoVM @Inject constructor(private val useCase: CryptoUseCase): ViewModel() {
+class CryptoVM @Inject constructor(private val useCase: CryptoUseCase) : ViewModel() {
 
     private val _cryptoList = MutableLiveData<ArrayList<CryptoCoins>>()
     private val _cryptoDetail = MutableLiveData<CryptoDetail>()
     private val _graphDataObject = MutableLiveData<CryptoGraph>()
-    private val _isInternetConnectionAvailable = MutableLiveData<Boolean>()
     private val _showLoadingLottie = MutableLiveData<Int>()
 
     val cryptoList: LiveData<ArrayList<CryptoCoins>> get() = _cryptoList
     val cryptoDetail: LiveData<CryptoDetail> get() = _cryptoDetail
     val graphDataObject: LiveData<CryptoGraph> get() = _graphDataObject
-    val isInternetConnectionAvailable: LiveData<Boolean> get() = _isInternetConnectionAvailable
-
-    fun setInternetConnectionVerifier(value: Boolean){
-        _isInternetConnectionAvailable.value = value
-    }
 
     @VisibleForTesting
-    fun setList(list: List<CryptoCoins>){
+    fun setList(list: List<CryptoCoins>) {
         _cryptoList.value = list.toArrayList()
     }
 
     fun getCryptoDetail(book: String) {
-        useCase.getCryptoDetail(book){
-            it.subscribeOn(io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object: Observer<TickerResponse>{
-                    override fun onSubscribe(d: Disposable) { }
-                    override fun onNext(ticker: TickerResponse) {
-                        _cryptoDetail.postValue(ticker.payload?.toDomain())
-                    }
-                    override fun onError(e: Throwable) {
-                        _cryptoDetail.postValue(CryptoDetail())
-                    }
-                    override fun onComplete() { }
-                })
-        }
+        useCase.getCryptoDetail(book).subscribeOn(io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.subscribe(object : Observer<CryptoDetail> {
+                override fun onSubscribe(d: Disposable) { }
+                override fun onNext(detail: CryptoDetail) {
+                    _cryptoDetail.postValue(detail)
+                }
+                override fun onError(e: Throwable) {
+                    _cryptoDetail.postValue(CryptoDetail())
+                }
+                override fun onComplete() {
+                }
+            })
     }
 
     fun getAllCryptoCoins() {
@@ -68,7 +60,7 @@ class CryptoVM @Inject constructor(private val useCase: CryptoUseCase): ViewMode
                         _cryptoList.postValue(result.data?.filter { it.book?.contains("mxn") == true }?.toArrayList())
                         _showLoadingLottie.postValue(View.GONE)
                     }
-                    is RequestState.Error<List<CryptoCoins>> ->{
+                    is RequestState.Error<List<CryptoCoins>> -> {
                         _cryptoList.postValue(arrayListOf())
                         _showLoadingLottie.postValue(View.GONE)
                     }
@@ -77,7 +69,6 @@ class CryptoVM @Inject constructor(private val useCase: CryptoUseCase): ViewMode
             }
         }.launchIn(viewModelScope)
     }
-
 
     fun getOpenOrders(book: String) {
         useCase.getOpenOrders(book).onEach { result ->
@@ -91,11 +82,13 @@ class CryptoVM @Inject constructor(private val useCase: CryptoUseCase): ViewMode
                                 graphYValue.add(Entry(bidsAsk.price?.toFloat() ?: 0F, index))
                                 graphXValues.add(bidsAsk.amount ?: "")
                             }
-                            _graphDataObject.postValue(CryptoGraph(
-                                book = book,
-                                yValues = graphYValue,
-                                xValues = graphXValues
-                            ))
+                            _graphDataObject.postValue(
+                                CryptoGraph(
+                                    book = book,
+                                    yValues = graphYValue,
+                                    xValues = graphXValues
+                                )
+                            )
                         }
                     }
                     is RequestState.Error<CryptoData> -> _graphDataObject.value = CryptoGraph()
@@ -105,5 +98,3 @@ class CryptoVM @Inject constructor(private val useCase: CryptoUseCase): ViewMode
         }.launchIn(viewModelScope)
     }
 }
-
-

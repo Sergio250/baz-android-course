@@ -7,15 +7,15 @@ import android.net.Network
 import android.net.NetworkRequest
 import androidx.lifecycle.LiveData
 
-class InternetConnectionVerifier (private val connectivityManager: ConnectivityManager):
-    LiveData<Boolean>(false){
+class InternetConnectionVerifier(private val connectivityManager: ConnectivityManager) :
+    LiveData<Boolean>(false) {
 
-    constructor(application: Application): this(
+    constructor(application: Application) : this(
         application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     )
 
     private val networkCallback by lazy {
-        object : ConnectivityManager.NetworkCallback(){
+        object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
                 postValue(true)
@@ -37,5 +37,4 @@ class InternetConnectionVerifier (private val connectivityManager: ConnectivityM
         super.onInactive()
         connectivityManager.unregisterNetworkCallback(networkCallback)
     }
-
 }

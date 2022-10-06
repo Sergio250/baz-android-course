@@ -15,7 +15,6 @@ interface CryptoDaoInterface {
     @Query("DELETE FROM crypto_coins")
     fun deleteCryptoCoinsFromDatabase()
 
-
     @Query("SELECT * FROM crypto_detail WHERE book LIKE :book")
     fun getCryptoDetailFromDatabase(book: String): CryptoDetailEntity
     @Insert
@@ -23,12 +22,10 @@ interface CryptoDaoInterface {
     @Query("DELETE FROM crypto_detail WHERE book LIKE :book")
     fun deleteCryptoDetailFromDatabase(book: String)
 
-
     @Query("SELECT * FROM crypto_bids_asks WHERE book LIKE :book")
     fun getBidsAsksCryptoCoinFromDatabase(book: String): List<CryptoBidsAsksEntity>
     @Insert
     fun insertBidsAndAsksCryptoCoinToDatabase(cryptoBidsAsksCoin: List<CryptoBidsAsksEntity>)
     @Query("DELETE FROM crypto_bids_asks WHERE book LIKE :book")
     fun deleteBidsAndAsksCryptoCoinFromDatabase(book: String)
-
 }

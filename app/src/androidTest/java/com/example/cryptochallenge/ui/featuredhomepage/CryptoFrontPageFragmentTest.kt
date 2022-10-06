@@ -9,14 +9,14 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.example.cryptochallenge.MainActivity
-import org.junit.Test
 import com.example.cryptochallenge.R
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.jvm.Throws
 
 @RunWith(AndroidJUnit4::class)
-class CryptoFrontPageFragmentTest{
+class CryptoFrontPageFragmentTest {
 
     @Rule
     @JvmField
@@ -32,9 +32,9 @@ class CryptoFrontPageFragmentTest{
     @Throws(Exception::class)
     fun clickStartButton_opensNextUI() {
         onView(withId(R.id.btnStart)).perform(click())
-        //Verify the next fragment
+        // Verify the next fragment
         onView(withId(R.id.fragmentList)).check(matches(isDisplayed()))
-        //Verify the return of the fragment
+        // Verify the return of the fragment
         pressBack()
         onView(withId(R.id.fragmentFrontPage)).check(matches(isDisplayed()))
     }

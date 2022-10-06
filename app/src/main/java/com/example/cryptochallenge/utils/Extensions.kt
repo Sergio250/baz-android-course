@@ -13,12 +13,13 @@ fun Double.formatAsCurrency(): String = NumberFormat.getCurrencyInstance().forma
 
 fun String.format(): String = this.replace("_", " ")
 
-fun String.toCaseLower() : String = this[0] + (this.substring(1, this.length)).lowercase()
+fun String.toCaseLower(): String = this[0] + (this.substring(1, this.length)).lowercase()
 
 fun List<CryptoCoins>.toArrayList() = ArrayList<CryptoCoins>(this)
 
 fun AvailableBooksResponse.Payload.toDomain() =
-    CryptoCoins(book = book,
+    CryptoCoins(
+        book = book,
         minAmount = minAmount,
         maxAmount = maxAmount,
         minPrice = minPrice,
@@ -57,7 +58,8 @@ fun OrderBookResponse.Payload.BidsOrAsks.toDomain() =
     )
 
 fun CryptoCoinsEntity.toDomain() =
-    CryptoCoins(book = book,
+    CryptoCoins(
+        book = book,
         minAmount = minAmount,
         maxAmount = maxAmount,
         minPrice = minPrice,
@@ -74,7 +76,7 @@ fun CryptoDetailEntity.toDomain() =
         low = low
     )
 
-fun List<CryptoBidsAsk>.toDomain()=
+fun List<CryptoBidsAsk>.toDomain() =
     CryptoData(
         bidsAsks = this
     )
@@ -111,5 +113,3 @@ fun CryptoBidsAsk.toDatabase() =
         price = price ?: "",
         amount = amount ?: ""
     )
-
-

@@ -13,11 +13,11 @@ import kotlin.text.format
 
 class CryptoAdapter(
     private var onClickItem: (CryptoCoins) -> Unit
-): ListAdapter<CryptoCoins, CryptoAdapter.CryptoViewHolder>(DiffCallBack()){
+) : ListAdapter<CryptoCoins, CryptoAdapter.CryptoViewHolder>(DiffCallBack()) {
 
-    inner class CryptoViewHolder(private val itemBinding: CryptoItemBinding) : RecyclerView.ViewHolder(itemBinding.root){
+    inner class CryptoViewHolder(private val itemBinding: CryptoItemBinding) : RecyclerView.ViewHolder(itemBinding.root) {
         @SuppressLint("SetTextI18n")
-        fun bindData(item: CryptoCoins){
+        fun bindData(item: CryptoCoins) {
             itemBinding.apply {
                 val cryptoInfo = CryptoCatalog.values().find { it.book == item.book }
                 imgCryptoLogo.setImageResource(
@@ -34,14 +34,14 @@ class CryptoAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CryptoViewHolder{
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CryptoViewHolder {
         val binding = CryptoItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CryptoViewHolder(binding)
     }
     override fun onBindViewHolder(holder: CryptoViewHolder, position: Int) = holder.bindData(getItem(position))
 }
 
-class DiffCallBack: DiffUtil.ItemCallback<CryptoCoins>() {
+class DiffCallBack : DiffUtil.ItemCallback<CryptoCoins>() {
     override fun areItemsTheSame(oldItem: CryptoCoins, newItem: CryptoCoins) = oldItem.book == newItem.book
     override fun areContentsTheSame(oldItem: CryptoCoins, newItem: CryptoCoins) = oldItem == newItem
 }
