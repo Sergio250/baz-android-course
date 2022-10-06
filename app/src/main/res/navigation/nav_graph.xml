@@ -11,10 +11,10 @@
         android:label="fragmentCryptoFrontPage">
         <action
             android:id="@+id/actionCryptoFrontPageFragmentToCryptoAccountCreationFragment"
-            app:destination="@id/cryptoAccountCreationFragment" />
+            app:destination="@id/cryptoListFragment" />
     </fragment>
     <fragment
-        android:id="@+id/cryptoAccountCreationFragment"
+        android:id="@+id/cryptoListFragment"
         android:name="com.example.cryptochallenge.ui.featuredlist.CryptoListFragment"
         android:label="fragmentCryptoAccountCreation"
         tools:layout="@layout/fragment_crypto_list" >

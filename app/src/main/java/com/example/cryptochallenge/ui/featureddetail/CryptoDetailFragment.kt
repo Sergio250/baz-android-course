@@ -1,11 +1,11 @@
 package com.example.cryptochallenge.ui.featureddetail
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.cryptochallenge.R
 import com.example.cryptochallenge.databinding.FragmentCryptoDetailBinding
@@ -51,7 +51,7 @@ class CryptoDetailFragment : Fragment() {
         return graphBidsAsksDataSet
     }
 
-    private fun drawLinesDataSet(lines: LineDataSet, xValues: ArrayList<String>){
+    private fun drawLinesDataSet(lines: LineDataSet, xValues: ArrayList<String>) {
         binding.chart.data = LineData(xValues, lines)
         binding.chart.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.cyan))
     }

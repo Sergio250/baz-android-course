@@ -12,7 +12,6 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class CryptoModule {
@@ -20,7 +19,7 @@ abstract class CryptoModule {
     @Binds
     abstract fun providesCryptoRepository(cryptoRepositoryImpl: CryptoRepositoryImp): CryptoRepositoryInterface
 
-    companion object{
+    companion object {
 
         @Provides
         fun provideBaseUrl(): String = "https://api.bitso.com/v3/"
@@ -30,9 +29,10 @@ abstract class CryptoModule {
             OkHttpClient.Builder()
                 .addInterceptor { chain ->
                     val client: OkHttpClient = OkHttpClient.Builder()
-                        .addNetworkInterceptor(HttpLoggingInterceptor().also {
-                            it.setLevel(HttpLoggingInterceptor.Level.BODY)
-                        }
+                        .addNetworkInterceptor(
+                            HttpLoggingInterceptor().also {
+                                it.setLevel(HttpLoggingInterceptor.Level.BODY)
+                            }
                         ).build()
 
                     val original = chain.request()
@@ -56,7 +56,5 @@ abstract class CryptoModule {
 
         @Provides
         fun providesApiService(retrofit: Retrofit): ApiServiceInterface = retrofit.create(ApiServiceInterface::class.java)
-
     }
-
 }
