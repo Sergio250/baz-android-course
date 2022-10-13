@@ -1,10 +1,12 @@
 package com.example.cryptochallenge.repository
 
-import com.example.cryptochallenge.data.database.entities.*
+import com.example.cryptochallenge.data.database.entities.CryptoBidsAsksEntity
+import com.example.cryptochallenge.data.database.entities.CryptoCoinsEntity
+import com.example.cryptochallenge.data.database.entities.CryptoDetailEntity
 import com.example.cryptochallenge.domain.base.CryptoCoins
 import com.example.cryptochallenge.domain.base.CryptoData
 import com.example.cryptochallenge.domain.base.CryptoDetail
-import com.example.cryptochallenge.domain.response.TickerResponse
+import com.example.cryptochallenge.network.models.TickerResponse
 import io.reactivex.Observable
 
 interface CryptoRepositoryInterface {

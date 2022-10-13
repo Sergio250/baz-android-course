@@ -3,10 +3,13 @@ package com.example.cryptochallenge.utils
 import com.example.cryptochallenge.data.database.entities.CryptoBidsAsksEntity
 import com.example.cryptochallenge.data.database.entities.CryptoCoinsEntity
 import com.example.cryptochallenge.data.database.entities.CryptoDetailEntity
-import com.example.cryptochallenge.domain.base.*
-import com.example.cryptochallenge.domain.response.AvailableBooksResponse
-import com.example.cryptochallenge.domain.response.OrderBookResponse
-import com.example.cryptochallenge.domain.response.TickerResponse
+import com.example.cryptochallenge.domain.base.CryptoBidsAsk
+import com.example.cryptochallenge.domain.base.CryptoCoins
+import com.example.cryptochallenge.domain.base.CryptoData
+import com.example.cryptochallenge.domain.base.CryptoDetail
+import com.example.cryptochallenge.network.models.AvailableBooksResponse
+import com.example.cryptochallenge.network.models.OrderBookResponse
+import com.example.cryptochallenge.network.models.TickerResponse
 import java.text.NumberFormat
 
 fun Double.formatAsCurrency(): String = NumberFormat.getCurrencyInstance().format(this)

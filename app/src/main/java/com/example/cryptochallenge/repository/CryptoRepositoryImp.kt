@@ -1,13 +1,15 @@
 package com.example.cryptochallenge.repository
 
 import com.example.cryptochallenge.data.database.dao.CryptoDaoInterface
-import com.example.cryptochallenge.data.database.entities.*
+import com.example.cryptochallenge.data.database.entities.CryptoBidsAsksEntity
+import com.example.cryptochallenge.data.database.entities.CryptoCoinsEntity
+import com.example.cryptochallenge.data.database.entities.CryptoDetailEntity
 import com.example.cryptochallenge.domain.base.CryptoCoins
 import com.example.cryptochallenge.domain.base.CryptoData
 import com.example.cryptochallenge.domain.base.CryptoDetail
-import com.example.cryptochallenge.domain.response.AvailableBooksResponse
-import com.example.cryptochallenge.domain.response.OrderBookResponse
-import com.example.cryptochallenge.domain.response.TickerResponse
+import com.example.cryptochallenge.network.models.AvailableBooksResponse
+import com.example.cryptochallenge.network.models.OrderBookResponse
+import com.example.cryptochallenge.network.models.TickerResponse
 import com.example.cryptochallenge.utils.toDomain
 import io.reactivex.Observable
 import retrofit2.Response
