@@ -1,4 +1,4 @@
-package com.example.cryptochallenge.domain.response
+package com.example.cryptochallenge.network.models
 
 import com.google.gson.annotations.SerializedName
 

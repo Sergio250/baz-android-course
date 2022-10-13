@@ -1,8 +1,8 @@
 package com.example.cryptochallenge.repository
 
-import com.example.cryptochallenge.domain.response.AvailableBooksResponse
-import com.example.cryptochallenge.domain.response.OrderBookResponse
-import com.example.cryptochallenge.domain.response.TickerResponse
+import com.example.cryptochallenge.network.models.AvailableBooksResponse
+import com.example.cryptochallenge.network.models.OrderBookResponse
+import com.example.cryptochallenge.network.models.TickerResponse
 import io.reactivex.Observable
 import retrofit2.Response
 import retrofit2.http.GET

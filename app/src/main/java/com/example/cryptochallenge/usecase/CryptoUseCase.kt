@@ -8,8 +8,10 @@ import com.example.cryptochallenge.utils.RequestState
 import com.example.cryptochallenge.utils.toDatabase
 import com.example.cryptochallenge.utils.toDomain
 import io.reactivex.Observable
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -28,44 +30,49 @@ class CryptoUseCase @Inject constructor(private val repository: CryptoRepository
             emitter.onNext(cryptoDetail)
         } catch (e: HttpException) {
             emitter.onError(Throwable(e.localizedMessage ?: "An unexpected error occurred"))
-        } catch(e: Exception){
+        } catch (e: Exception) {
             emitter.onNext(repository.getCryptoDetailFromDatabase(book))
         }
     }
 
     fun getAllCryptoCoins(): Flow<RequestState<List<CryptoCoins>>> = channelFlow {
-        try {
-            val cryptoCoins: List<CryptoCoins>
-            send(RequestState.Loading())
-            val response = repository.getAllCryptoCoinsFromApi()
-            cryptoCoins = response.let {
-                repository.deleteCryptoCoinsFromDatabase()
-                repository.insertCryptoCoinsToDatabase(response.map { it.toDatabase() })
-                response
+        withContext(IO) {
+            try {
+                val cryptoCoins: List<CryptoCoins>
+                send(RequestState.Loading())
+                val response = repository.getAllCryptoCoinsFromApi()
+                cryptoCoins = response.let {
+                    repository.deleteCryptoCoinsFromDatabase()
+                    repository.insertCryptoCoinsToDatabase(response.map { it.toDatabase() })
+                    response
+                }
+                send(RequestState.Success(cryptoCoins))
+            } catch (e: HttpException) {
+                send(RequestState.Error(e.localizedMessage ?: "An unexpected error occurred"))
+            } catch (e: IOException) {
+                send(RequestState.Success(repository.getAllCryptoCoinsFromDatabase()))
             }
-            send(RequestState.Success(cryptoCoins))
-        } catch (e: HttpException) {
-            send(RequestState.Error(e.localizedMessage ?: "An unexpected error occurred"))
-        } catch (e: IOException) {
-            send(RequestState.Success(repository.getAllCryptoCoinsFromDatabase()))
         }
     }
 
     fun getOpenOrders(book: String): Flow<RequestState<CryptoData>> = channelFlow {
-        try {
-            val bidsAsks: CryptoData
-            send(RequestState.Loading())
-            val response = repository.getBidsAsksFromApi(book)
-            bidsAsks = run {
-                repository.deleteBidsAsksFromDatabase(book)
-                response.bidsAsks?.map { it.toDatabase() }?.let { repository.insertBidsAsksToDatabase(it) }
-                response
+        withContext(IO) {
+            try {
+                val bidsAsks: CryptoData
+                send(RequestState.Loading())
+                val response = repository.getBidsAsksFromApi(book)
+                bidsAsks = run {
+                    repository.deleteBidsAsksFromDatabase(book)
+                    response.bidsAsks?.map { it.toDatabase() }
+                        ?.let { repository.insertBidsAsksToDatabase(it) }
+                    response
+                }
+                send(RequestState.Success(bidsAsks))
+            } catch (e: HttpException) {
+                send(RequestState.Error(e.localizedMessage ?: "An unexpected error occurred"))
+            } catch (e: IOException) {
+                send(RequestState.Success(repository.getBidsAsksFromDatabase(book)))
             }
-            send(RequestState.Success(bidsAsks))
-        } catch (e: HttpException) {
-            send(RequestState.Error(e.localizedMessage ?: "An unexpected error occurred"))
-        } catch (e: IOException) {
-            send(RequestState.Success(repository.getBidsAsksFromDatabase(book)))
         }
     }
 }

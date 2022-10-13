@@ -12,7 +12,7 @@ import com.example.cryptochallenge.databinding.FragmentCryptoListBinding
 import com.example.cryptochallenge.ui.CryptoVM
 import com.example.cryptochallenge.utils.InternetConnectionVerifier
 
-class CryptoListFragment: Fragment() {
+class CryptoListFragment : Fragment() {
 
     private lateinit var binding: FragmentCryptoListBinding
     private val cryptoVM by activityViewModels<CryptoVM>()
@@ -35,7 +35,7 @@ class CryptoListFragment: Fragment() {
                             findNavController().navigate(R.id.cryptoDetailFragment)
                         } else {
                             cryptoVM.graphDataObject.observe(viewLifecycleOwner) {
-                                if(it != null) {
+                                if (it != null) {
                                     findNavController().navigate(R.id.cryptoDetailFragment)
                                 }
                             }
